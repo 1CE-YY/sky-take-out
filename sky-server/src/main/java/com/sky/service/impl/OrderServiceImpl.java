@@ -21,6 +21,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -174,17 +178,17 @@ public class OrderServiceImpl implements OrderService {
         log.info("调用updateStatus，用于替换微信支付更新数据库状态的问题");
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
 
-//        Map map = new HashMap();
-//        map.put("type", 1);// 消息类型，1表示来单提醒
-//        //获取订单id
-//        Orders orders=orderMapper.getByNumberAndUserId(orderNumber, userId);
-//        map.put("orderId", orders.getId());
-//        map.put("content", "订单号：" + orderNumber);
-//
-//
-//        // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
-//        webSocketServer.sendToAllClient(JSON.toJSONString(map));
-//        log.info("来单提醒：{}", JSON.toJSONString(map));
+        Map map = new HashMap();
+        map.put("type", 1);// 消息类型，1表示来单提醒
+        //获取订单id
+        Orders orders=orderMapper.getByNumberAndUserId(orderNumber, userId);
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + orderNumber);
+
+
+        // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+        log.info("来单提醒：{}", JSON.toJSONString(map));
 
 
         return vo;
@@ -212,6 +216,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        Map map = new HashMap();
+        map.put("type", 1);//消息类型，1表示来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + outTradeNo);
+
+        //通过WebSocket实现来单提醒，向客户端浏览器推送消息
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     /**
