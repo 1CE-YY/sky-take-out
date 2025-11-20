@@ -6,6 +6,8 @@ import com.sky.entity.Dish;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface DishMapper {
 
@@ -41,4 +43,16 @@ public interface DishMapper {
      * @param id
      */
     void deleteById(Long id);
+
+    /**
+     * 修改菜品
+     * @param dish
+     */
+    void update(Dish dish);
+
+    /**
+     * 批量删除菜品
+     * @param ids
+     */
+    void deteleByIds(List<Long> ids);
 }
