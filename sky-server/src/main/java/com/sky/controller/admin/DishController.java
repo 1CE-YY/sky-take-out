@@ -90,4 +90,18 @@ public class DishController {
         DishVO dishVO = dishService.getByIdWithFlavor(id);
         return Result.success(dishVO);
     }
+
+    /**
+     * 起售停售菜品
+     * @param status
+     * @param id
+     * @return
+     */
+    @PutMapping("/status/{status}")
+    @ApiOperation("起售停售菜品")
+    public Result startOrStop(@PathVariable Integer status, @RequestParam Long id){
+        log.info("修改菜品状态：{}, {}", status, id);
+        dishService.startOrStop(status, id);
+        return Result.success();
+    }
 }
