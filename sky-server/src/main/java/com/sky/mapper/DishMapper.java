@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.entity.Dish;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -12,4 +13,9 @@ public interface DishMapper {
      */
     Integer countByCategoryId(Long categoryId);
 
+    /**
+     * 新增菜品
+     * @param dish
+     */
+    void insert(Dish dish);
 }
