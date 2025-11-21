@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.SetmealMapper">
+    <insert id="insert">
+        insert into setmeal (name, category_id, price, status, image, description, create_time, create_user, update_time, update_user)
+        values (#{name}, #{categoryId}, #{price}, #{status}, #{image}, #{description}, #{createTime}, #{createUser}, #{updateTime}, #{updateUser})
+    </insert>
     <update id="update">
         update setmeal
         <set>
@@ -17,9 +21,30 @@
         </set>
         where id = #{id}
     </update>
+    <delete id="deleteById">
+        delete from setmeal where id = #{id}
+    </delete>
 
     <select id="countByCategoryId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         select count(id) from setmeal where category_id = #{id}
+    </select>
+    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+        select s.*, c.name from setmeal s left join category c on s.category_id = c.id
+        <where>
+            <if test="name != null">
+                and s.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and s.status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and s.category_id = #{categoryId}
+            </if>
+        </where>
+        order by s.create_time desc
+    </select>
+    <select id="getById" resultType="com.sky.entity.Setmeal">
+        select * from setmeal where id = #{id}
     </select>
 
 </mapper>

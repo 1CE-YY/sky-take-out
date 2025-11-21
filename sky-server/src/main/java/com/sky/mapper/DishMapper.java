@@ -59,4 +59,18 @@ public interface DishMapper {
      * @param ids
      */
     void deteleByIds(List<Long> ids);
+
+    /**
+     * 根据条件查询菜品列表
+     * @param dish
+     * @return
+     */
+    List<Dish> list(Dish dish);
+
+    /**
+     * 根据套餐id查询对应的菜品列表
+     * @param id 套餐id
+     * @return 菜品列表
+     */
+    List<Dish> getBySetmealId(Long id);
 }
