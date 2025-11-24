@@ -12,9 +12,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Api(tags = "菜品相关接口")
@@ -24,6 +26,8 @@ import java.util.List;
 public class DishController {
 
     private final DishService dishService;
+
+    private final RedisTemplate redisTemplate;
 
     /**
      * 新增菜品
@@ -35,6 +39,9 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO){
         log.info("新增菜品：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
+
+        String key = "dish_" + dishDTO.getCategoryId();
+        cleanCache(key);
         return Result.success();
     }
 
@@ -61,6 +68,7 @@ public class DishController {
     public Result delete(@RequestParam List<Long> ids){
         log.info("批量删除菜品：{}", ids);
         dishService.deleteBatch(ids);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -76,6 +84,8 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO);
+
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -103,6 +113,7 @@ public class DishController {
     public Result startOrStop(@PathVariable Integer status, @RequestParam Long id){
         log.info("修改菜品状态：{}, {}", status, id);
         dishService.startOrStop(status, id);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -118,5 +129,16 @@ public class DishController {
         log.info("根据条件查询菜品列表：{}", categoryId);
         List<Dish> dishList = dishService.list(categoryId);
         return Result.success(dishList);
+    }
+
+    /**
+     * 清理缓存
+     * @param key
+     */
+    private void cleanCache(String key) {
+        Set keys = redisTemplate.keys(key);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
     }
 }
