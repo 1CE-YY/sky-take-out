@@ -3,6 +3,8 @@ package com.sky.mapper;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
+
 @Mapper
 public interface OrderMapper {
 
@@ -28,4 +30,14 @@ public interface OrderMapper {
      * @param order
      */
     void update(Orders order);
+
+    /**
+     * 更新订单状态
+     *
+     * @param orderStatus
+     * @param orderPayStatus
+     * @param checkoutTime
+     * @param orderNumber
+     */
+    void updateStatus(Integer orderStatus, Integer orderPayStatus, LocalDateTime checkoutTime, String orderNumber);
 }
