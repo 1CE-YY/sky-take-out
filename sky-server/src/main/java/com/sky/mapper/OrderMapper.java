@@ -67,4 +67,13 @@ public interface OrderMapper {
      * @return
      */
     Integer countStatus(Integer toBeConfirmed);
+
+    /**
+     * 根据状态和下单时间小于指定时间查询订单
+     *
+     * @param pendingPayment
+     * @param time
+     * @return
+     */
+    List<Orders> getByStatusAndOrdertimeLT(Integer pendingPayment, LocalDateTime time);
 }

@@ -102,4 +102,10 @@
             </if>
         </where>
     </select>
+    <select id="getByStatusAndOrdertimeLT" resultType="com.sky.entity.Orders">
+        select *
+        from orders
+        where status = #{status}
+          and order_time &lt; #{orderTime}
+    </select>
 </mapper>
