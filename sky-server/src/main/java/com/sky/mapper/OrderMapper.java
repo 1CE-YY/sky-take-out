@@ -12,4 +12,20 @@ public interface OrderMapper {
      * @param order
      */
     void insert(Orders order);
+
+    /**
+     * 根据订单号和用户id查询订单
+     *
+     * @param outTradeNo
+     * @param userId
+     * @return
+     */
+    Orders getByNumberAndUserId(String outTradeNo, Long userId);
+
+    /**
+     * 更新订单数据
+     *
+     * @param order
+     */
+    void update(Orders order);
 }

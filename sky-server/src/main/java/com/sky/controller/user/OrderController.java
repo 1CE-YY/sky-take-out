@@ -41,4 +41,20 @@ public class OrderController {
         return Result.success(orderSubmitVO);
     }
 
+
+    /**
+     * 订单支付
+     *
+     * @param ordersPaymentDTO
+     * @return
+     */
+    @PostMapping("/payment")
+    @ApiOperation("订单支付")
+    public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) {
+        log.info("订单支付：{}", ordersPaymentDTO);
+        OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
+        log.info("订单支付结果：{}", orderPaymentVO);
+        return Result.success(orderPaymentVO);
+    }
+
 }
