@@ -14,6 +14,7 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
+import com.sky.util.WebSocketMessageUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
@@ -49,6 +50,8 @@ public class OrderServiceImpl implements OrderService {
     private final WeChatPayUtil weChatPayUtil;
 
     private final WebSocketServer webSocketServer;
+
+    private final WebSocketMessageUtil webSocketMessageUtil;
 
     /**
      * 用户下单
@@ -131,15 +134,8 @@ public class OrderServiceImpl implements OrderService {
         order.setCheckoutTime(LocalDateTime.now());
         orderMapper.update(order);
 
-        Map map = new HashMap();
-        map.put("type", 1);// 消息类型，1表示来单提醒
-        //获取订单id
-        map.put("orderId", order.getId());
-        map.put("content", "订单号：" + outTradeNo);
-
-
         // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
-        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+        webSocketMessageUtil.sendNewOrderMessage(order.getId(), outTradeNo);
     }
 
     /**
@@ -182,17 +178,10 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.updateStatus(orderStatus, orderPayStatus, checkoutTime, orderNumber);
 
-        Map map = new HashMap();
-        map.put("type", 1);// 消息类型，1表示来单提醒
         //获取订单id
         Orders orders=orderMapper.getByNumberAndUserId(orderNumber, userId);
-        map.put("orderId", orders.getId());
-        map.put("content", "订单号：" + orderNumber);
-
-
         // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
-        webSocketServer.sendToAllClient(JSON.toJSONString(map));
-        log.info("来单提醒：{}", JSON.toJSONString(map));
+        webSocketMessageUtil.sendNewOrderMessage(orders.getId(), orderNumber);
 
         return vo;
     }
@@ -222,11 +211,22 @@ public class OrderServiceImpl implements OrderService {
 
         // 查询出订单明细，并封装入OrderVO进行响应
         if (page != null && page.getTotal() > 0) {
-            for (Orders orders : page) {
-                Long orderId = orders.getId();// 订单id
+            // 收集所有订单ID
+            List<Long> orderIds = page.stream()
+                    .map(Orders::getId)
+                    .collect(Collectors.toList());
 
-                // 查询订单明细
-                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
+            // 批量查询所有订单明细，避免N+1查询问题
+            List<OrderDetail> allOrderDetails = orderDetailMapper.getByOrderIds(orderIds);
+
+            // 按订单ID分组
+            Map<Long, List<OrderDetail>> orderDetailMap = allOrderDetails.stream()
+                    .collect(Collectors.groupingBy(OrderDetail::getOrderId));
+
+            // 构建OrderVO
+            for (Orders orders : page) {
+                Long orderId = orders.getId();
+                List<OrderDetail> orderDetails = orderDetailMap.getOrDefault(orderId, Collections.emptyList());
 
                 OrderVO orderVO = new OrderVO();
                 BeanUtils.copyProperties(orders, orderVO);
@@ -553,13 +553,8 @@ public class OrderServiceImpl implements OrderService {
         if (ordersDB == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
-        Map map = new HashMap();
-        map.put("type", 2);// 消息类型，2表示用户催单
-        //获取订单id
-        map.put("orderId", ordersDB.getId());
-        map.put("content", "订单号：" + ordersDB.getNumber());
-        // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
-        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+        // 通过WebSocket实现用户催单提醒，向客户端浏览器推送消息
+        webSocketMessageUtil.sendOrderReminderMessage(ordersDB.getId(), ordersDB.getNumber());
 
     }
 

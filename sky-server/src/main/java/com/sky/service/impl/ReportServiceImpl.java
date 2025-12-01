@@ -248,7 +248,7 @@ public class ReportServiceImpl implements ReportService {
             excel.close();
 
         }catch (IOException e){
-            e.printStackTrace();
+            log.error("导出Excel文件失败: {}", e.getMessage());
         }
     }
 

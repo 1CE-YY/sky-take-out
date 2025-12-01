@@ -1,6 +1,7 @@
 package com.sky.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -23,6 +24,7 @@ import java.util.Map;
 /**
  * Http工具类
  */
+@Slf4j
 public class HttpClientUtil {
 
     static final  int TIMEOUT_MSEC = 5 * 1000;
@@ -60,13 +62,13 @@ public class HttpClientUtil {
                 result = EntityUtils.toString(response.getEntity(),"UTF-8");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("HTTP GET请求失败: {}", e.getMessage());
         }finally {
             try {
                 response.close();
                 httpClient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("HTTP操作异常: {}", e.getMessage());
             }
         }
 
@@ -113,7 +115,7 @@ public class HttpClientUtil {
             try {
                 response.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("HTTP操作异常: {}", e.getMessage());
             }
         }
 
@@ -163,7 +165,7 @@ public class HttpClientUtil {
             try {
                 response.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("HTTP操作异常: {}", e.getMessage());
             }
         }
 

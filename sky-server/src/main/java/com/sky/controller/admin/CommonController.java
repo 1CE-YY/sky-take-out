@@ -36,14 +36,31 @@ public class CommonController {
         log.info("文件上传：{}", file);
 
         try {
+            // 验证文件是否为空
+            if (file == null || file.isEmpty()) {
+                throw new IllegalArgumentException("上传文件不能为空");
+            }
 
             String originalFilename = file.getOriginalFilename();
-            String subfix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // 验证文件名
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                throw new IllegalArgumentException("文件名不能为空");
+            }
+
+            // 验证文件扩展名
+            int lastDotIndex = originalFilename.lastIndexOf(".");
+            if (lastDotIndex == -1 || lastDotIndex == originalFilename.length() - 1) {
+                throw new IllegalArgumentException("文件必须包含有效的扩展名");
+            }
+            String subfix = originalFilename.substring(lastDotIndex);
             String objectName = UUID.randomUUID().toString() + subfix;
 
             String fileUrl = aliOssUtil.upload(file.getBytes(), objectName);
             return Result.success(fileUrl);
 
+        } catch (IllegalArgumentException e) {
+            log.warn("文件参数错误：{}", e.getMessage());
+            return Result.error(e.getMessage());
         } catch (Exception e) {
             log.error("文件上传失败：{}", e.getMessage());
             return Result.error(MessageConstant.UPLOAD_FAILED);

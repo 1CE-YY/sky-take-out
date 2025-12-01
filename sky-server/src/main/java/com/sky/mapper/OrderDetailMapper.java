@@ -23,4 +23,12 @@ public interface OrderDetailMapper {
      * @return
      */
     List<OrderDetail> getByOrderId(Long orderId);
+
+    /**
+     * 根据订单id列表批量查询订单明细数据
+     *
+     * @param orderIds
+     * @return
+     */
+    List<OrderDetail> getByOrderIds(List<Long> orderIds);
 }

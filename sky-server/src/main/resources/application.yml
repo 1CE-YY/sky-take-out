@@ -36,14 +36,14 @@ logging:
 
 sky:
   jwt:
-    # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: ice
-    # 设置jwt过期时间
+    # 设置jwt签名加密时使用的秘钥 - 使用环境变量，生产环境必须设置强密钥
+    admin-secret-key: ${JWT_ADMIN_SECRET_KEY:sky-admin-jwt-secret-key-2025-must-be-changed-in-production}
+    # 设置jwt过期时间 (2小时)
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
 
-    user-secret-key: ice
+    user-secret-key: ${JWT_USER_SECRET_KEY:sky-user-jwt-secret-key-2025-must-be-changed-in-production}
     user-ttl: 7200000
     user-token-name: authorization
 
