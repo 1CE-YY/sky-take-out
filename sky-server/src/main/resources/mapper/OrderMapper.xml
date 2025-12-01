@@ -50,10 +50,10 @@
                 status = #{orderStatus},
             </if>
             <if test="orderPaidStatus != null">
-                pay_status = #{orderPaidStatus},
+                pay_status = #{orderPayStatus},
             </if>
             <if test="check_out_time != null">
-                checkout_time = #{check_out_time}
+                checkout_time = #{checkoutTime}
             </if>
         </set>
         where number = #{orderNumber}
