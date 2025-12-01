@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -539,6 +540,27 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+    }
+
+    /**
+     * 用户催单
+     *
+     * @param id
+     */
+    @Override
+    public void reminder(Integer id) {
+        Orders ordersDB = orderMapper.getById(Long.valueOf(id));
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        Map map = new HashMap();
+        map.put("type", 2);// 消息类型，2表示用户催单
+        //获取订单id
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + ordersDB.getNumber());
+        // 通过WebSocket实现来单提醒，向客户端浏览器推送消息
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+
     }
 
 }
