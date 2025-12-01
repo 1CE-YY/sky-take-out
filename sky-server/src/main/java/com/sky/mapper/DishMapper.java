@@ -9,6 +9,7 @@ import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DishMapper {
@@ -73,4 +74,11 @@ public interface DishMapper {
      * @return 菜品列表
      */
     List<Dish> getBySetmealId(Long id);
+
+    /**
+     * 根据参数统计菜品数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
