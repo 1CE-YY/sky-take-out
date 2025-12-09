@@ -13,9 +13,9 @@ import java.util.Map;
 public class JwtUtil {
     /**
      * 生成jwt
-     * 使用Hs256算法, 私匙使用固定秘钥
+     * 使用Hs256算法, 私钥使用固定密钥
      *
-     * @param secretKey jwt秘钥（必须至少32字节用于HS256算法）
+     * @param secretKey jwt密钥（必须至少32字节用于HS256算法）
      * @param ttlMillis jwt过期时间(毫秒)
      * @param claims    设置的信息
      * @return JWT token字符串
@@ -42,7 +42,7 @@ public class JwtUtil {
     /**
      * Token解密
      *
-     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
+     * @param secretKey jwt密钥 此密钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
      * @param token     加密后的token
      * @return Claims对象
      */
@@ -73,7 +73,11 @@ public class JwtUtil {
         // JJWT 0.11.x 要求 HS256 至少 256 位（32 字节）
         if (keyBytes.length < 32) {
             // 为了向后兼容，填充密钥到32字节
-            // 警告：这只是临时方案，生产环境应该使用真正的32字节密钥
+            // ⚠️ 警告：这只是临时方案，会降低密钥强度！
+            // 生产环境必须使用真正的32字节强随机密钥
+            System.err.println("警告: JWT密钥长度不足32字节，当前长度: " + keyBytes.length + 
+                             " 字节。已自动填充，但强烈建议在配置文件中使用至少32字节的强随机密钥！");
+            
             byte[] paddedKey = new byte[32];
             System.arraycopy(keyBytes, 0, paddedKey, 0, keyBytes.length);
             // 用密钥本身循环填充剩余部分

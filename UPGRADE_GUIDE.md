@@ -289,7 +289,8 @@ cannot find symbol: class XXX
 
 ## 📚 参考文档
 
-- [JJWT 0.11 迁移指南](https://github.com/jwtk/jjwt#install-jdk-maven)
+- [JJWT GitHub 仓库](https://github.com/jwtk/jjwt)
+- [JJWT 0.11.x 发行说明](https://github.com/jwtk/jjwt/releases/tag/0.11.5)
 - [Apache POI 变更日志](https://poi.apache.org/changes.html)
 - [MyBatis Spring Boot 文档](https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/)
 - [Fastjson 安全公告](https://github.com/alibaba/fastjson/wiki/security_update_20170315)
