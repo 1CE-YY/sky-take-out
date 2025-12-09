@@ -2,5 +2,35 @@
 .idea
 *.iml
 *.class
-*Test.java
-**/test/
+
+# 安全：忽略包含敏感信息的配置文件
+**/application-dev.yml
+**/application-prod.yml
+.env
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.vscode/
+.settings/
+.project
+.classpath
+
+# Maven
+dependency-reduced-pom.xml
+
+# 支付证书等敏感文件
+*.pem
+*.p12
